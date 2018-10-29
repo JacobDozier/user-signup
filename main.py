@@ -30,22 +30,47 @@ def user_signup():
         blank_user_error = "Username is required."
         if is_pass_blank:
             blank_pass_error = "Password is required."
-            return render_template('index.html', email=email_input, user_error=blank_user_error,pass_error=blank_pass_error)
+            if is_email_invalid:
+                email_error = "That's an invalid email."
+                return render_template('index.html', username=username_input, email=email_input, email_error=email_error, pass_error=blank_pass_error, user_error=blank_user_error)
+            return render_template('index.html', username=username_input, email=email_input, user_error=blank_user_error, pass_error=blank_pass_error)
         elif pass_mismatch:
             verify_pass_error = "Password does not match. Please retype password exactly."
-            return render_template('index.html', email=email_input, user_error=blank_user_error, verify_pass_error=verify_pass_error)
+            if is_email_invalid:
+                email_error = "That's an invalid email."
+                return render_template('index.html', username=username_input, email=email_input, email_error=email_error, pass_error=verify_pass_error, user_error=blank_user_error)
+            return render_template('index.html', username=username_input, email=email_input, user_error=blank_user_error, verify_pass_error=verify_pass_error)
 
-        return render_template('index.html', email=email_input, user_error=blank_user_error)
+        return render_template('index.html', username=username_input, email=email_input, user_error=blank_user_error)
     elif is_user_invalid:
         invalid_user_error = "That's not a valid username."
-        return render_template('index.html', email=email_input, user_error=invalid_user_error)
+        if is_pass_blank:
+            blank_pass_error = "Password is required."
+            if is_email_invalid:
+                email_error = "That's an invalid email."
+                return render_template('index.html', username=username_input, email=email_input, email_error=email_error, user_error=invalid_user_error, pass_error=blank_pass_error)
+            return render_template('index.html', username=username_input, email=email_input, user_error=invalid_user_error, pass_error=blank_pass_error)
+        elif pass_mismatch:
+            verify_pass_error = "Password does not match. Please retype password exactly."
+            if is_email_invalid:
+                email_error = "That's an invalid email."
+                return render_template('index.html', username=username_input, email=email_input, email_error=email_error, pass_error=verify_pass_error, user_error=invalid_user_error)
+            return render_template('index.html', username=username_input, email=email_input, user_error=blank_user_error, verify_pass_error=verify_pass_error)
+
+        return render_template('index.html', username=username_input, email=email_input, user_error=invalid_user_error)
 
     #HERE
     if is_pass_blank:
         blank_pass_error = "Password is required."
+        if is_email_invalid:
+            email_error = "That's an invalid email."
+            return render_template('index.html', username=username_input, email=email_input, email_error=email_error, pass_error=blank_pass_error)
         return render_template('index.html', username=username_input, email=email_input, pass_error=blank_pass_error)
     elif pass_mismatch:
         verify_pass_error = "Password does not match. Please retype password exactly."
+        if is_email_invalid:
+            email_error = "That's an invalid email."
+            return render_template('index.html', username=username_input, email=email_input, email_error=email_error, pass_error=verify_pass_error)
         return render_template('index.html', username=username_input, email=email_input, verify_pass_error=verify_pass_error)
     
     # Still need to add email validation to other logic trees. #HERE
