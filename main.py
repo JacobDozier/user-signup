@@ -1,11 +1,9 @@
-from flask import Flask, request, redirect, render_template, url_for
+from flask import Flask, request, redirect, render_template
 import cgi, helpers
 
 app = Flask(__name__)
 
 app.config['DEBUG'] = True      # Displays runtime errors in the browser, too
-
-submission_valid = False
 
 @app.route("/", methods=['POST'])
 def user_signup():
@@ -25,14 +23,14 @@ def user_signup():
     pass_mismatch = helpers.pass_mismatch(pass_input, verify_pass_input)
     is_email_invalid = helpers.is_email_valid(email_input)
 
-    # Check to see if user input is valid, then mark global variable to trigger new form.
+   # Check to see if user input is valid, then mark global variable to trigger new form.
     if not is_user_blank and not is_user_invalid and not is_pass_blank and not pass_mismatch and not is_email_invalid:
-        submission_valid = True
+       return redirect("/welcome?username={}".format(username_input))
 
     if is_user_blank:
         blank_user_error = "Username is required."
         if is_pass_blank:
-            blank_pass_error = "Password is required."
+            blank_pass_error = "That's an invalid password."
             if is_email_invalid:
                 email_error = "That's an invalid email."
                 return render_template('index.html', username=username_input, email=email_input, email_error=email_error, pass_error=blank_pass_error, user_error=blank_user_error)
@@ -48,7 +46,7 @@ def user_signup():
     elif is_user_invalid:
         invalid_user_error = "That's not a valid username."
         if is_pass_blank:
-            blank_pass_error = "Password is required."
+            blank_pass_error = "That's an invalid password."
             if is_email_invalid:
                 email_error = "That's an invalid email."
                 return render_template('index.html', username=username_input, email=email_input, email_error=email_error, user_error=invalid_user_error, pass_error=blank_pass_error)
@@ -63,7 +61,7 @@ def user_signup():
         return render_template('index.html', username=username_input, email=email_input, user_error=invalid_user_error)
 
     if is_pass_blank:
-        blank_pass_error = "Password is required."
+        blank_pass_error = "That's an invalid password."
         if is_email_invalid:
             email_error = "That's an invalid email."
             return render_template('index.html', username=username_input, email=email_input, email_error=email_error, pass_error=blank_pass_error)
@@ -81,13 +79,10 @@ def user_signup():
 
     return render_template('index.html', username=username_input, email=email_input)
 
-@app.route("/welcome", methods=['POST'])
+@app.route("/welcome", methods=['GET'])
 def welcome_message():
-    username_input = cgi.escape(request.form['username'])
-    if submission_valid:
-        return render_template('welcome.html', username=username_input)
-    else:
-        return render_template('index.html')
+    username_input = cgi.escape(request.args['username'])
+    return render_template('welcome.html', username=username_input)
 
 @app.route("/")
 def index():
